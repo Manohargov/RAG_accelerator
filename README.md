@@ -59,91 +59,72 @@ Everything outside it (`store.py` → `retriever.py` → `pipeline.py` → `cli.
 is orchestration.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif","fontSize":"13px","primaryColor":"#eef2ff","primaryTextColor":"#0f172a","primaryBorderColor":"#818cf8","lineColor":"#94a3b8","clusterBkg":"#f8fafc","clusterBorder":"#e2e8f0","edgeLabelBackground":"#ffffff","titleColor":"#334155"},"flowchart":{"curve":"basis","nodeSpacing":30,"rankSpacing":40,"padding":8,"useMaxWidth":true}}}%%
 flowchart TB
 
-    subgraph CFG["CONFIG — AppSettings (Rag_app/settings.py), overridable per run with --model"]
-        direction LR
-        C1["model_id<br/>jinaai/jina-embeddings-v5-omni-small"]
-        C2["device = auto<br/>dtype = auto<br/>batch_size = 16<br/>max_text_length = 512"]
-        C3["query_task = retrieval.query<br/>index_task = empty<br/>trust_remote_code = true"]
+    C0["CONFIG · AppSettings<br/>model_id = v5-omni-small · --model for one run<br/>device / dtype = auto · batch 16 · max_length 512<br/>query_task set · index_task empty"]
+    ENTRY["embed_texts() / embed_images()<br/>torch + transformers import lazily"]
+
+    subgraph LOAD["1 · LOAD — stage model.load"]
+        direction TB
+        L1["resolve_device() → resolve_dtype()<br/>auto: cuda ▸ xpu ▸ mps ▸ cpu · bf16 ▸ fp32"]
+        L2["_resolve_source()<br/>omni? modality=vision · local copy ▸ HF id"]
+        L3["from_pretrained(trust_remote_code)<br/>fails → _materialise() → plain files → retry"]
+        L4["_cast ▸ .to(device) ▸ eval()"]
+        L1 --> L2
+        L2 --> L3
+        L3 --> L4
     end
 
-    ENTRY["ClipEmbedder.embed_texts() / embed_images()<br/>torch + transformers imported lazily on first use"]
-
-    subgraph LOAD["1 — LOAD · stage model.load (a leaf timer; it also covers the cold imports)"]
+    subgraph DETECT["2 · API DETECT — newest first, embed last"]
         direction TB
-        L1["resolve_device()<br/>auto picks cuda, then xpu, then mps, then cpu"]
-        L2["resolve_dtype(device)<br/>bfloat16 when CUDA/XPU reports bf16 support,<br/>float32 everywhere else"]
-        L3{"_is_omni_model(model_id)?"}
-        L4["_resolve_source()<br/>a materialised local copy under<br/>LOCALAPPDATA/BookRAG/models/NAME if present,<br/>otherwise the HuggingFace repository id"]
-        L5["AutoModel.from_pretrained(source,<br/>trust_remote_code = true,<br/>modality = vision for omni — drops the audio tower)"]
-        L6["_materialise() on failure:<br/>snapshot_download into plain files<br/>(Windows cannot write the HF symlink cache)<br/>then retry from there"]
-        L7["_cast(dtype) then .to(device).eval()"]
-        L8["_detect_api() — records which API this checkpoint exposes"]
-        ERR1["ModelUnavailableError<br/>carries an install hint"]
-    end
-
-    subgraph API["2 — API DETECTION · newest first; the embed branch is deliberately last so every existing checkpoint resolves exactly as before"]
-        direction TB
-        D1{"encode_text + encode_image?"}
-        D2{"get_text_features + get_image_features?"}
-        D3{"get_text_embeddings + get_image_embeddings?"}
-        D4{"model.embed?"}
-        R1["api = encode — CLIP v2"]
-        R2["api = features"]
-        R3["api = embeddings"]
-        R4["api = embed — v5-omni"]
-        D1 -->|"yes"| R1
+        D1["encode_text + encode_image?<br/>→ api = encode · CLIP v2"]
+        D2["get_text_features?<br/>→ api = features · processor"]
+        D3["get_text_embeddings?<br/>→ api = embeddings · legacy"]
+        D4["model.embed?<br/>→ api = embed · v5-omni"]
+        ERR["ModelUnavailableError<br/>with an install hint"]
         D1 -->|"no"| D2
-        D2 -->|"yes"| R2
         D2 -->|"no"| D3
-        D3 -->|"yes"| R3
         D3 -->|"no"| D4
-        D4 -->|"yes"| R4
-        D4 -->|"no"| ERR2["ModelUnavailableError"]
+        D4 -->|"none matched"| ERR
     end
 
-    subgraph ENC["3 — ENCODE · stage embed.text / embed.image, kept as sibling leaf timers"]
+    subgraph ENC["3 · ENCODE — embed.text / embed.image"]
         direction TB
-        MOD{"input modality"}
-        PROC["_processor_or_fail() — built on demand<br/>CLIP: AutoProcessor.from_pretrained<br/>omni: hand-assembled Qwen3VLProcessor<br/>(tokenizer, image_processor, Qwen3VLVideoProcessor)<br/>the auto video registry does not know jina_embeddings_v5_omni"]
-        T1["CLIP text — _resolve_task() checks retrieval.query<br/>against the model instruction table first,<br/>then encode_text(batch_size, max_length)"]
-        T2["CLIP image — encode_image(batch_size)"]
-        O1["omni text — the role prefix is applied here:<br/>task set means search, so Query: prefix<br/>no task means index, so Document: prefix<br/>then processor, then model.embed()"]
-        O2["omni image — image_token is read from the processor,<br/>never guessed: a wrong token encodes as unk and<br/>silently returns identical vectors for every image<br/>one text slot per image, padding = true, then model.embed()"]
-        F1["fallbacks — processor then<br/>get_text_features / get_image_embeddings"]
-        MOD -->|"text · api encode"| T1
-        MOD -->|"image · api encode"| T2
-        MOD -->|"any · api embed"| O1
-        MOD -->|"image · api embed"| O2
-        MOD -->|"any · api features or embeddings"| F1
-        PROC -.->|"omni path builds it first"| O1
-        PROC -.->|"omni path builds it first"| O2
+        MOD{"api + modality"}
+        PROC["processor built on demand<br/>CLIP: AutoProcessor<br/>omni: hand-built Qwen3VLProcessor"]
+        T["CLIP: encode_text(task)<br/>omni: Query: / Document: + embed<br/>legacy: get_text_features"]
+        I["CLIP: encode_image()<br/>omni: image_token + embed<br/>legacy: get_image_features"]
+        MOD --> PROC
+        PROC -->|"text"| T
+        PROC -->|"image"| I
     end
 
-    NORM["l2_normalise()<br/>(n, 1024) float32, unit length — cosine in ChromaDB then equals the dot product"]
-    MON["monitor.set_model(id, device, dtype, api, load_s, parameters, peak RSS)<br/>written to monitoring.log — best effort, never raises"]
-    OUT["→ store.py — ChromaDB collection with hnsw:space = cosine<br/>and bookrag:model_id recorded as the collection fingerprint"]
+    NORM["l2_normalise() → (n, 1024) unit length"]
+    OUT["store.py → ChromaDB collection<br/>cosine space · bookrag:model_id"]
+    MON["monitor.set_model(...)<br/>→ monitoring.log · never raises"]
 
-    CFG -.-> ENTRY
-    ENTRY --> L1 --> L2 --> L3
-    L3 --> L4 --> L5
-    L5 -.->|"cannot load"| L6
-    L6 -.->|"retried from the plain copy"| L5
-    L5 -->|"load failed twice"| ERR1
-    L5 --> L7 --> L8
-    L8 --> D1
-    R1 --> MOD
-    R2 --> MOD
-    R3 --> MOD
-    R4 --> MOD
-    T1 --> NORM
-    T2 --> NORM
-    O1 --> NORM
-    O2 --> NORM
-    F1 --> NORM
+    C0 --> ENTRY
+    ENTRY --> L1
+    L4 --> D1
+    D4 -->|"api recorded"| MOD
+    T --> NORM
+    I --> NORM
     NORM --> OUT
-    L8 -.-> MON
+    OUT -.-> MON
+
+    classDef cfg fill:#eef2ff,stroke:#818cf8,color:#0f172a
+    classDef load fill:#e0f2fe,stroke:#38bdf8,color:#0f172a
+    classDef det fill:#f5f3ff,stroke:#a78bfa,color:#0f172a
+    classDef enc fill:#ccfbf1,stroke:#2dd4bf,color:#0f172a
+    classDef out fill:#dcfce7,stroke:#4ade80,color:#0f172a
+    classDef bad fill:#fee2e2,stroke:#f87171,color:#7f1d1d
+    class C0,ENTRY cfg
+    class L1,L2,L3,L4 load
+    class D1,D2,D3,D4 det
+    class MOD,PROC,T,I enc
+    class NORM,MON,OUT out
+    class ERR bad
 ```
 
 Points worth knowing, because each one exists for a reason that is easy to
