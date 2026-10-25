@@ -1,0 +1,36 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "unsloth-studio/unsloth/Qwen2.5-Coder-32B-Instruct",
+  "plugin": ["opencode-smol"],
+  "providers": {
+    "unsloth-studio": {
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "http://localhost:8888/v1",
+        "apiKey": "YOUR_API_KEY"
+      },
+      "models": {
+        "unsloth/Qwen3.8-27B-GGUF:UD-IQ3_S": {
+          "name": "Qwen3.8-27B-GGUF:UD-IQ3_S",
+          "limit": {
+            "context": 32768,
+            "output": 4096
+          }
+        },
+        "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF": {
+          "name": "Qwen3-Coder-30B-A3B-Instruct-GGUF",
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          }
+        }
+      }
+    }
+  },
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    }
+  }
+}

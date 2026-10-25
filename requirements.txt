@@ -1,0 +1,37 @@
+# ---------------------------------------------------------------------------
+# BookRAG runtime dependencies
+#
+# Install with:  pip install -r requirements.txt
+#
+# torch:         Jina embedding inference (CUDA / XPU / MPS / CPU)
+# transformers:  AutoModel loading of jinaai/jina-embeddings-v5-omni-small
+#                and jinaai/jina-clip-v2.  4.57 is the hard floor: the v5-omni
+#                remote code targets it, and 5.x breaks Jina's code entirely.
+# peft:          REQUIRED by the v5-omni remote modelling code
+# timm:          REQUIRED by Jina's remote modelling code (imported eagerly)
+# einops:        REQUIRED by Jina's EVA02 vision tower (imported eagerly)
+# torchvision:   required by Jina's image transform pipeline
+# chromadb:      persistent vector store (cosine space)
+# pymupdf:       PDF text + image extraction
+# pillow:        image decoding / resizing
+# numpy:         embedding buffers
+#
+# Optional, only for faster inference on supported GPUs:
+#   flash-attn, xformers, apex, deepspeed
+# ---------------------------------------------------------------------------
+
+torch>=2.1.0,<3.0.0
+transformers>=4.57.0,<5.0.0
+peft>=0.13.0
+accelerate>=0.26.0
+huggingface-hub>=0.23.0
+safetensors>=0.4.0
+torchvision>=0.16.0
+timm>=0.9.0
+einops>=0.7.0
+
+chromadb>=0.5.0,<2.0.0
+
+pymupdf>=1.24.0
+pillow>=10.0.0
+numpy>=1.24.0

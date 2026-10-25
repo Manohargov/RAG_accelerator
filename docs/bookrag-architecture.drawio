@@ -1,0 +1,177 @@
+<mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0" adaptiveColors="auto">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="2" value="BookRAG — Multimodal RAG Architecture" style="text;html=1;fontSize=22;fontStyle=1;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+      <mxGeometry x="300" y="10" width="700" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="3" value="&lt;b&gt;Documents&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;PDF / TXT / MD&lt;/font&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;rounded=0;size=0.12;" vertex="1" parent="1">
+      <mxGeometry x="300" y="70" width="130" height="75" as="geometry"/>
+    </mxCell>
+    <mxCell id="4" value="&lt;b&gt;Images&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;PNG / JPG&lt;/font&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;rounded=0;size=0.12;" vertex="1" parent="1">
+      <mxGeometry x="470" y="70" width="120" height="75" as="geometry"/>
+    </mxCell>
+    <mxCell id="5" value="&lt;b&gt;Query&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;text / image / both&lt;/font&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fixedSize=1;size=20;" vertex="1" parent="1">
+      <mxGeometry x="780" y="73" width="170" height="65" as="geometry"/>
+    </mxCell>
+    <mxCell id="10" value="Interface Layer" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=1;arcSize=8;html=1;whiteSpace=wrap;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="80" y="180" width="1080" height="75" as="geometry"/>
+    </mxCell>
+    <mxCell id="11" value="&lt;b&gt;cli.py&lt;/b&gt;  —  ingest | query | find-image | demo | stats | reset | doctor | settings" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="10">
+      <mxGeometry x="15" y="33" width="710" height="33" as="geometry"/>
+    </mxCell>
+    <mxCell id="12" value="&lt;b&gt;demo.py&lt;/b&gt;&lt;br&gt;smoke test" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="10">
+      <mxGeometry x="745" y="33" width="150" height="33" as="geometry"/>
+    </mxCell>
+    <mxCell id="20" value="Orchestration Layer" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;arcSize=8;html=1;whiteSpace=wrap;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="80" y="290" width="1080" height="85" as="geometry"/>
+    </mxCell>
+    <mxCell id="21" value="&lt;b&gt;BookRagPipeline&lt;/b&gt;  (pipeline.py)&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Facade — owns embedder, store, retriever&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="20">
+      <mxGeometry x="15" y="33" width="370" height="42" as="geometry"/>
+    </mxCell>
+    <mxCell id="22" value="&lt;b&gt;_StreamedWriter&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;encode(batch k) ∥ upsert(batch k−1)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=0;" vertex="1" parent="20">
+      <mxGeometry x="405" y="33" width="300" height="42" as="geometry"/>
+    </mxCell>
+    <mxCell id="23" value="&lt;b&gt;IngestReport&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;text_chunks, images, pages, errors&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="20">
+      <mxGeometry x="725" y="33" width="240" height="42" as="geometry"/>
+    </mxCell>
+    <mxCell id="30" value="ingest.py" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;rounded=1;arcSize=8;html=1;whiteSpace=wrap;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="80" y="420" width="250" height="220" as="geometry"/>
+    </mxCell>
+    <mxCell id="31" value="&lt;b&gt;Text Processing&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;normalise_text → chunk_text&lt;br&gt;(1200 chars, 150 overlap)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry x="15" y="33" width="220" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="32" value="&lt;b&gt;Document Extraction&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;extract_pdf / extract_text_file&lt;br&gt;image filtering (decorative drop)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry x="15" y="93" width="220" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="33" value="&lt;b&gt;ID Generation&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;SHA-256(kind|source|page|content)&lt;br&gt;idempotent upsert&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry x="15" y="156" width="220" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="40" value="embedder.py" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;rounded=1;arcSize=8;html=1;whiteSpace=wrap;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="360" y="420" width="260" height="220" as="geometry"/>
+    </mxCell>
+    <mxCell id="41" value="&lt;b&gt;ClipEmbedder&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Lazy model loading&lt;br&gt;trust_remote_code=True&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="40">
+      <mxGeometry x="15" y="33" width="230" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="42" value="&lt;b&gt;Encoding&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;embed_text / embed_image&lt;br&gt;→ 1024-d unit vectors (L2 norm)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="40">
+      <mxGeometry x="15" y="93" width="230" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="43" value="&lt;b&gt;Auto-detection&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Device: CUDA &amp;gt; XPU &amp;gt; MPS &amp;gt; CPU&lt;br&gt;API: encode → features → embed(omni)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="40">
+      <mxGeometry x="15" y="156" width="230" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="50" value="store.py" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f8cecc;strokeColor=#b85450;rounded=1;arcSize=8;html=1;whiteSpace=wrap;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="650" y="420" width="230" height="220" as="geometry"/>
+    </mxCell>
+    <mxCell id="51" value="&lt;b&gt;VectorStore&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Persistent ChromaDB client&lt;br&gt;cosine HNSW index&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="50">
+      <mxGeometry x="15" y="33" width="200" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="52" value="&lt;b&gt;Operations&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;upsert / query / delete&lt;br&gt;$and metadata filters&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="50">
+      <mxGeometry x="15" y="93" width="200" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="53" value="&lt;b&gt;Model Fingerprint&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;bookrag:model_id guard&lt;br&gt;prevents cross-checkpoint mixing&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="50">
+      <mxGeometry x="15" y="156" width="200" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="55" value="retriever.py" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=1;arcSize=8;html=1;whiteSpace=wrap;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="910" y="420" width="250" height="220" as="geometry"/>
+    </mxCell>
+    <mxCell id="56" value="&lt;b&gt;Search Interface&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;search_text / search_image&lt;br&gt;search (combined: averaged vectors)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="55">
+      <mxGeometry x="15" y="33" width="220" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="57" value="&lt;b&gt;Asymmetric Retrieval&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;query_task=&amp;quot;retrieval.query&amp;quot;&lt;br&gt;index_task=&amp;quot;&amp;quot; (none)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="55">
+      <mxGeometry x="15" y="93" width="220" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="58" value="&lt;b&gt;SearchHit&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;id / score / distance / document&lt;br&gt;score = 1 − cosine_distance&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="55">
+      <mxGeometry x="15" y="156" width="220" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="60" value="&lt;b&gt;PyMuPDF&lt;/b&gt; (fitz)&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;PDF text + image extraction&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;dashed=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="80" y="685" width="170" height="48" as="geometry"/>
+    </mxCell>
+    <mxCell id="61" value="&lt;b&gt;Pillow&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Image processing&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;dashed=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="80" y="745" width="170" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="62" value="&lt;b&gt;Jina CLIP v2 / v5 omni&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Dual-encoder: shared text+image space&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;dashed=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="360" y="685" width="260" height="48" as="geometry"/>
+    </mxCell>
+    <mxCell id="63" value="&lt;b&gt;torch&lt;/b&gt; · &lt;b&gt;transformers&lt;/b&gt; · &lt;b&gt;HF Hub&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;ML framework + model download&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;dashed=1;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="360" y="745" width="260" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="64" value="&lt;b&gt;ChromaDB&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;HNSW cosine index&lt;br&gt;persistent on-disk&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="690" y="680" width="150" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="70" value="Cross-cutting" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#E6E6E6;strokeColor=#B3B3B3;rounded=1;arcSize=8;html=1;whiteSpace=wrap;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="1200" y="290" width="210" height="360" as="geometry"/>
+    </mxCell>
+    <mxCell id="71" value="&lt;b&gt;settings.py&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;AppSettings — JSON file&lt;br&gt;+ BOOKRAG_* env overrides&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6E6E6;strokeColor=#B3B3B3;fontSize=11;" vertex="1" parent="70">
+      <mxGeometry x="15" y="34" width="180" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="72" value="&lt;b&gt;monitoring.py&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Stage timings (container/leaf)&lt;br&gt;Model runtime capture&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6E6E6;strokeColor=#B3B3B3;fontSize=11;" vertex="1" parent="70">
+      <mxGeometry x="15" y="96" width="180" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="73" value="&lt;b&gt;logging_setup.py&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;bookrag.log + monitoring.log&lt;br&gt;Console + rotating file&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6E6E6;strokeColor=#B3B3B3;fontSize=11;" vertex="1" parent="70">
+      <mxGeometry x="15" y="158" width="180" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="74" value="&lt;b&gt;paths.py&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Platform data dirs&lt;br&gt;BOOKRAG_HOME override&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6E6E6;strokeColor=#B3B3B3;fontSize=11;" vertex="1" parent="70">
+      <mxGeometry x="15" y="220" width="180" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="75" value="&lt;b&gt;errors.py&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;BookRagError hierarchy&lt;br&gt;Config / Dependency / Store / Query&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6E6E6;strokeColor=#B3B3B3;fontSize=11;" vertex="1" parent="70">
+      <mxGeometry x="15" y="282" width="180" height="52" as="geometry"/>
+    </mxCell>
+    <mxCell id="76" value="&lt;font style=&quot;font-size:11px&quot;&gt;&lt;i&gt;Shared 1024-d vector space  (text + images)&lt;/i&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="400" y="648" width="260" height="25" as="geometry"/>
+    </mxCell>
+    <mxCell id="77" value="&lt;font style=&quot;font-size:10px;color:#82b366&quot;&gt;&lt;b&gt;Ingest Flow →&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+      <mxGeometry x="80" y="395" width="100" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="78" value="&lt;font style=&quot;font-size:10px;color:#6c8ebf&quot;&gt;&lt;b&gt;← Query Flow&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=right;verticalAlign=middle;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="395" width="100" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="80" edge="1" source="3" target="10" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="81" edge="1" source="4" target="10" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.4;entryY=0;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="82" edge="1" source="5" target="10" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="83" edge="1" source="10" target="20" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="84" value="parse &amp;amp; chunk" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;exitX=0.15;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontStyle=2;fontSize=10;fontColor=#82b366;" edge="1" source="20" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="85" value="chunks + images" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontStyle=2;fontSize=10;fontColor=#82b366;" edge="1" source="30" target="40" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="86" value="1024-d vectors" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontStyle=2;fontSize=10;fontColor=#82b366;" edge="1" source="40" target="50" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="87" value="queries" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=0.85;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontStyle=2;fontSize=10;fontColor=#6c8ebf;" edge="1" source="20" target="55" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="88" value="embed query" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;strokeColor=#6c8ebf;exitX=0;exitY=0.35;exitDx=0;exitDy=0;entryX=1;entryY=0.3;entryDx=0;entryDy=0;fontStyle=2;fontSize=10;fontColor=#6c8ebf;dashed=0;" edge="1" source="55" target="40" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="89" value="nearest neighbor" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;strokeColor=#6c8ebf;exitX=0;exitY=0.65;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;fontStyle=2;fontSize=10;fontColor=#6c8ebf;dashed=0;" edge="1" source="55" target="50" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="90" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#999999;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="30" target="60" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="91" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#999999;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="40" target="62" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="92" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#999999;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="50" target="64" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="93" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#B3B3B3;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="70" target="20" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="94" value="&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;Data Classes&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Chunk · ExtractedImage&lt;br&gt;SourceDocument&lt;/font&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=2;" vertex="1" parent="1">
+      <mxGeometry x="270" y="590" width="145" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="95" value="&lt;font style=&quot;font-size:9px&quot;&gt;Results →&lt;br&gt;SearchHit[]&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#6c8ebf;fontStyle=3;" vertex="1" parent="1">
+      <mxGeometry x="960" y="648" width="90" height="30" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>

@@ -1,0 +1,12 @@
+# Development / CI dependencies.
+# Install with:  pip install -r requirements-dev.txt
+
+-r requirements.txt
+
+pytest>=8.0.0
+pytest-cov>=4.1.0
+ruff>=0.5.0
+mypy>=1.10.0
+types-Pillow>=10.0.0
+# Only used by scripts/export_drawio.py to merge the per-page PDF exports.
+pypdf>=4.0.0

@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bookrag"
+version = "0.1.0"
+description = "Multimodal RAG over books and PDFs using Jina embeddings (v5-omni / CLIP v2) and ChromaDB."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "BookRAG contributors" }]
+keywords = ["rag", "multimodal", "embeddings", "chromadb", "pdf", "jina", "clip"]
+
+dependencies = [
+    "torch>=2.1.0,<3.0.0",
+    "transformers>=4.57.0,<5.0.0",
+    "peft>=0.13.0",
+    "accelerate>=0.26.0",
+    "huggingface-hub>=0.23.0",
+    "safetensors>=0.4.0",
+    "torchvision>=0.16.0",
+    "timm>=0.9.0",
+    "einops>=0.7.0",
+    "chromadb>=0.5.0,<2.0.0",
+    "pymupdf>=1.24.0",
+    "pillow>=10.0.0",
+    "numpy>=1.24.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+    "types-Pillow>=10.0.0",
+]
+
+[project.scripts]
+bookrag = "bookrag.Rag_app.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/example/bookrag"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "real_model: exercises the actual Jina checkpoint (v5-omni by default, downloads ~3.1 GB)",
+]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4"]
+ignore = ["E501", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+ignore_missing_imports = true
+disallow_untyped_defs = true
+no_implicit_optional = true

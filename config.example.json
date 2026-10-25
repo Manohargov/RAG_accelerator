@@ -1,0 +1,36 @@
+# BookRAG configuration
+#
+# Copy this file to <data dir>/settings.json, or use:
+#   bookrag settings --set KEY=VALUE --save
+#
+# The data directory is:
+#   Windows : %LOCALAPPDATA%\BookRAG
+#   macOS   : ~/Library/Application Support/BookRAG
+#   Linux   : ~/.local/share/BookRAG
+# Override it with the BOOKRAG_HOME environment variable.
+
+{
+  "model_id": "jinaai/jina-clip-v2",
+  "device": "auto",
+  "dtype": "auto",
+  "trust_remote_code": true,
+  "max_text_length": 512,
+
+  "query_task": "retrieval.query",
+  "index_task": "",
+
+  "collection_name": "book_chunks",
+  "hnsw_space": "cosine",
+  "top_k": 5,
+
+  "chunk_size": 1200,
+  "chunk_overlap": 150,
+  "batch_size": 16,
+  "extract_images": true,
+  "keep_extracted_images": true,
+  "min_image_pixels": 4096,
+  "max_image_side": 1024,
+
+  "verbose": false,
+  "seed": 42
+}

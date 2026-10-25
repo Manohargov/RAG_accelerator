@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Model / data artefacts
+book_multimodal_rag_db/
+*.pdf
+!docs/**/*.pdf
+extracted_images/
+demo_assets/
+examples/
+wandb/
+*.log
+
+# Run logs (source checkouts write here; see paths.logs_dir)
+Log/
